@@ -1646,7 +1646,10 @@ impl Gpu {
         )?;
         let stats = Arc::new(
             crate::stats::StatsSnapshot {
-                g17_reader: Some(stats::Reader(shared.clone())),
+                g17_reader: Some(stats::Reader(
+                    shared.clone(),
+                    cfg.m5.map(|board| board.perf_states),
+                )),
                 ..Default::default()
             },
             GFP_KERNEL,
@@ -1846,7 +1849,7 @@ impl Gpu {
                     shared.feed.clone(),
                 )?,
                 seen_submissions: 0,
-                rings: channel::Rings::new(shared.variant.graph)?,
+                rings: channel::Rings::new(shared.variant.graph, shared.variant.m5_commands)?,
                 recovery: recovery::State::new(),
                 effort: power::Effort::new(),
                 hold: power::Hold::new(),
@@ -2011,7 +2014,7 @@ impl Gpu {
                     shared.feed.clone(),
                 )?,
                 seen_submissions: 0,
-                rings: channel::Rings::new(shared.variant.graph)?,
+                rings: channel::Rings::new(shared.variant.graph, shared.variant.m5_commands)?,
                 recovery: recovery::State::new(),
                 effort: power::Effort::new(),
                 hold: power::Hold::new(),
